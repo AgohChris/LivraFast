@@ -151,7 +151,7 @@ export const darkTheme = {
   },
 };
 
-// Styles communs modernes
+// Styles communs modernes avec support responsive
 export const commonStyles = {
   // Conteneurs
   container: {
@@ -269,6 +269,79 @@ export const commonStyles = {
   gradientCard: {
     borderRadius: 20,
     overflow: 'hidden',
+  },
+  
+  // Styles responsives
+  responsive: {
+    // Grilles adaptatives
+    grid: {
+      phone: {
+        columns: 1,
+        spacing: 16,
+        padding: 16,
+      },
+      tablet: {
+        columns: 2,
+        spacing: 20,
+        padding: 24,
+      },
+      tabletLarge: {
+        columns: 3,
+        spacing: 24,
+        padding: 32,
+      },
+    },
+    
+    // Headers adaptatifs
+    header: {
+      phone: {
+        padding: 16,
+        fontSize: 24,
+      },
+      tablet: {
+        padding: 24,
+        fontSize: 28,
+      },
+      tabletLarge: {
+        padding: 32,
+        fontSize: 32,
+      },
+    },
+    
+    // Cartes adaptatives
+    card: {
+      phone: {
+        marginHorizontal: 16,
+        borderRadius: 16,
+      },
+      tablet: {
+        marginHorizontal: 20,
+        borderRadius: 20,
+      },
+      tabletLarge: {
+        marginHorizontal: 24,
+        borderRadius: 24,
+      },
+    },
+    
+    // Boutons adaptatifs
+    button: {
+      phone: {
+        height: 48,
+        fontSize: 16,
+        borderRadius: 12,
+      },
+      tablet: {
+        height: 56,
+        fontSize: 18,
+        borderRadius: 16,
+      },
+      tabletLarge: {
+        height: 64,
+        fontSize: 20,
+        borderRadius: 20,
+      },
+    },
   },
 };
 

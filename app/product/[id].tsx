@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router } from 'expo-router';
 import Notification from '@/components/Notification';
 import { useCart } from '@/contexts/CartContext';
+import { useResponsive } from '@/hooks/useResponsive';
 
 const { width } = Dimensions.get('window');
 
@@ -47,6 +48,7 @@ export default function ProductDetailScreen() {
   const [notificationMessage, setNotificationMessage] = useState('');
   const theme = useTheme();
   const { addItem } = useCart();
+  const responsive = useResponsive();
 
   const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
 
@@ -82,9 +84,18 @@ export default function ProductDetailScreen() {
     <View style={styles.imageContainer}>
       <Card.Cover 
         source={{ uri: product.images[currentImageIndex] }} 
-        style={styles.mainImage}
+        style={[
+          styles.mainImage,
+          { height: responsive.getAdaptiveSize(300, 400) }
+        ]}
       />
-      <View style={styles.imageThumbnails}>
+      <View style={[
+        styles.imageThumbnails,
+        { 
+          paddingHorizontal: responsive.getPadding('lg'),
+          gap: responsive.getSpacing('sm'),
+        }
+      ]}>
         {product.images.map((image, index) => (
           <TouchableOpacity
             key={index}
@@ -94,6 +105,11 @@ export default function ProductDetailScreen() {
               source={{ uri: image }}
               style={[
                 styles.thumbnail,
+                {
+                  width: responsive.getAdaptiveSize(60, 80),
+                  height: responsive.getAdaptiveSize(60, 80),
+                  borderRadius: responsive.getBorderRadius('sm'),
+                },
                 currentImageIndex === index && styles.selectedThumbnail
               ]}
             />
@@ -106,7 +122,16 @@ export default function ProductDetailScreen() {
   const renderProductInfo = () => (
     <View style={styles.productInfo}>
       <View style={styles.headerRow}>
-        <Text variant="headlineSmall" style={[styles.productName, { color: theme.colors.onSurface }]}>
+        <Text 
+          variant="headlineSmall" 
+          style={[
+            styles.productName, 
+            { 
+              color: theme.colors.onSurface,
+              fontSize: responsive.getAdaptiveFontSize(20, 24),
+            }
+          ]}
+        >
           {product.name}
         </Text>
         <Badge style={styles.discountBadge}>
@@ -115,24 +140,67 @@ export default function ProductDetailScreen() {
       </View>
       
       <View style={styles.priceRow}>
-        <Text variant="headlineMedium" style={[styles.currentPrice, { color: theme.colors.error }]}>
-                      {product.price.toLocaleString()} CFA
+        <Text 
+          variant="headlineMedium" 
+          style={[
+            styles.currentPrice, 
+            { 
+              color: theme.colors.error,
+              fontSize: responsive.getAdaptiveFontSize(24, 28),
+            }
+          ]}
+        >
+          {product.price.toLocaleString()} CFA
         </Text>
-        <Text variant="titleMedium" style={[styles.originalPrice, { color: theme.colors.onSurfaceVariant }]}>
-                      {product.originalPrice.toLocaleString()} CFA
+        <Text 
+          variant="titleMedium" 
+          style={[
+            styles.originalPrice, 
+            { 
+              color: theme.colors.onSurfaceVariant,
+              fontSize: responsive.getAdaptiveFontSize(18, 20),
+            }
+          ]}
+        >
+          {product.originalPrice.toLocaleString()} CFA
         </Text>
       </View>
 
       <View style={styles.ratingRow}>
-        <Text variant="bodyMedium" style={[styles.rating, { color: '#f39c12' }]}>
+        <Text 
+          variant="bodyMedium" 
+          style={[
+            styles.rating, 
+            { 
+              color: '#f39c12',
+              fontSize: responsive.getAdaptiveFontSize(14, 16),
+            }
+          ]}
+        >
           {product.rating} ({product.reviews} avis)
         </Text>
-        <Chip mode="outlined" style={styles.categoryChip}>
+        <Chip 
+          mode="outlined" 
+          style={[
+            styles.categoryChip,
+            { borderRadius: responsive.getBorderRadius('md') }
+          ]}
+        >
           {product.category}
         </Chip>
       </View>
 
-      <Text variant="bodyMedium" style={[styles.description, { color: theme.colors.onSurface }]}>
+      <Text 
+        variant="bodyMedium" 
+        style={[
+          styles.description, 
+          { 
+            color: theme.colors.onSurface,
+            fontSize: responsive.getAdaptiveFontSize(14, 16),
+            lineHeight: responsive.getAdaptiveSize(22, 24),
+          }
+        ]}
+      >
         {product.description}
       </Text>
     </View>
@@ -140,53 +208,101 @@ export default function ProductDetailScreen() {
 
   const renderOptions = () => (
     <View style={styles.optionsContainer}>
-      <Text variant="titleMedium" style={[styles.sectionTitle, { color: theme.colors.onSurface }]}>
+      <Text 
+        variant="titleMedium" 
+        style={[
+          styles.sectionTitle, 
+          { 
+            color: theme.colors.onSurface,
+            fontSize: responsive.getAdaptiveFontSize(18, 20),
+          }
+        ]}
+      >
         Couleur
       </Text>
-      <View style={styles.colorOptions}>
+      <View style={[
+        styles.colorOptions,
+        { gap: responsive.getSpacing('sm') }
+      ]}>
         {product.colors.map((color) => (
           <Chip
             key={color}
             mode={selectedColor === color ? 'flat' : 'outlined'}
             onPress={() => setSelectedColor(color)}
-            style={styles.colorChip}
+            style={[
+              styles.colorChip,
+              { borderRadius: responsive.getBorderRadius('md') }
+            ]}
           >
             {color}
           </Chip>
         ))}
       </View>
 
-      <Text variant="titleMedium" style={[styles.sectionTitle, { color: theme.colors.onSurface }]}>
+      <Text 
+        variant="titleMedium" 
+        style={[
+          styles.sectionTitle, 
+          { 
+            color: theme.colors.onSurface,
+            fontSize: responsive.getAdaptiveFontSize(18, 20),
+          }
+        ]}
+      >
         Taille
       </Text>
-      <View style={styles.sizeOptions}>
+      <View style={[
+        styles.sizeOptions,
+        { gap: responsive.getSpacing('sm') }
+      ]}>
         {product.sizes.map((size) => (
           <Chip
             key={size}
             mode={selectedSize === size ? 'flat' : 'outlined'}
             onPress={() => setSelectedSize(size)}
-            style={styles.sizeChip}
+            style={[
+              styles.sizeChip,
+              { borderRadius: responsive.getBorderRadius('md') }
+            ]}
           >
             {size}
           </Chip>
         ))}
       </View>
 
-      <Text variant="titleMedium" style={[styles.sectionTitle, { color: theme.colors.onSurface }]}>
+      <Text 
+        variant="titleMedium" 
+        style={[
+          styles.sectionTitle, 
+          { 
+            color: theme.colors.onSurface,
+            fontSize: responsive.getAdaptiveFontSize(18, 20),
+          }
+        ]}
+      >
         Quantité
       </Text>
       <View style={styles.quantityContainer}>
         <IconButton
           icon="minus"
-          size={24}
+          size={responsive.getAdaptiveSize(24, 28)}
           onPress={() => setQuantity(Math.max(1, quantity - 1))}
         />
-        <Text variant="titleLarge" style={[styles.quantityText, { color: theme.colors.onSurface }]}>
+        <Text 
+          variant="titleLarge" 
+          style={[
+            styles.quantityText, 
+            { 
+              color: theme.colors.onSurface,
+              fontSize: responsive.getAdaptiveFontSize(20, 24),
+            }
+          ]}
+        >
           {quantity}
         </Text>
         <IconButton
           icon="plus"
-          size={24}
+          size={responsive.getAdaptiveSize(24, 28)}
           onPress={() => setQuantity(quantity + 1)}
         />
       </View>
@@ -195,15 +311,42 @@ export default function ProductDetailScreen() {
 
   const renderSpecifications = () => (
     <View style={styles.specsContainer}>
-      <Text variant="titleMedium" style={[styles.sectionTitle, { color: theme.colors.onSurface }]}>
+      <Text 
+        variant="titleMedium" 
+        style={[
+          styles.sectionTitle, 
+          { 
+            color: theme.colors.onSurface,
+            fontSize: responsive.getAdaptiveFontSize(18, 20),
+          }
+        ]}
+      >
         Caractéristiques
       </Text>
       {Object.entries(product.specs).map(([key, value]) => (
         <View key={key} style={styles.specRow}>
-          <Text variant="bodyMedium" style={[styles.specKey, { color: theme.colors.onSurface }]}>
+          <Text 
+            variant="bodyMedium" 
+            style={[
+              styles.specKey, 
+              { 
+                color: theme.colors.onSurface,
+                fontSize: responsive.getAdaptiveFontSize(14, 16),
+              }
+            ]}
+          >
             {key}
           </Text>
-          <Text variant="bodyMedium" style={[styles.specValue, { color: theme.colors.onSurfaceVariant }]}>
+          <Text 
+            variant="bodyMedium" 
+            style={[
+              styles.specValue, 
+              { 
+                color: theme.colors.onSurfaceVariant,
+                fontSize: responsive.getAdaptiveFontSize(14, 16),
+              }
+            ]}
+          >
             {value}
           </Text>
         </View>
@@ -214,19 +357,35 @@ export default function ProductDetailScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       {/* Header avec boutons de navigation */}
-      <View style={[styles.header, { backgroundColor: theme.colors.surface }]}>
+      <View style={[
+        styles.header, 
+        { 
+          backgroundColor: theme.colors.surface,
+          paddingHorizontal: responsive.getPadding('sm'),
+          paddingVertical: responsive.getPadding('sm'),
+        }
+      ]}>
         <IconButton
           icon="arrow-left"
-          size={24}
+          size={responsive.getAdaptiveSize(24, 28)}
           onPress={goBack}
           iconColor={theme.colors.onSurface}
         />
-        <Text variant="titleMedium" style={[styles.headerTitle, { color: theme.colors.onSurface }]}>
+        <Text 
+          variant="titleMedium" 
+          style={[
+            styles.headerTitle, 
+            { 
+              color: theme.colors.onSurface,
+              fontSize: responsive.getAdaptiveFontSize(18, 20),
+            }
+          ]}
+        >
           Détail produit
         </Text>
         <IconButton
           icon="home"
-          size={24}
+          size={responsive.getAdaptiveSize(24, 28)}
           onPress={goHome}
           iconColor={theme.colors.onSurface}
         />
@@ -235,7 +394,10 @@ export default function ProductDetailScreen() {
       <ScrollView showsVerticalScrollIndicator={false}>
         {renderImageGallery()}
         
-        <View style={styles.content}>
+        <View style={[
+          styles.content,
+          { paddingHorizontal: responsive.getPadding('lg') }
+        ]}>
           {renderProductInfo()}
           
           <Divider style={styles.divider} />
@@ -249,11 +411,25 @@ export default function ProductDetailScreen() {
       </ScrollView>
 
       {/* Boutons d'action */}
-      <View style={[styles.actionButtons, { backgroundColor: theme.colors.surface }]}>
+      <View style={[
+        styles.actionButtons, 
+        { 
+          backgroundColor: theme.colors.surface,
+          padding: responsive.getPadding('lg'),
+          gap: responsive.getSpacing('sm'),
+        }
+      ]}>
         <Button
           mode="outlined"
           onPress={handleAddToCart}
-          style={styles.addToCartButton}
+          style={[
+            styles.addToCartButton,
+            { 
+              flex: 1,
+              height: responsive.getHeight('button'),
+              borderRadius: responsive.getBorderRadius('md'),
+            }
+          ]}
           icon="cart-plus"
         >
           Ajouter au panier
@@ -261,7 +437,14 @@ export default function ProductDetailScreen() {
         <Button
           mode="contained"
           onPress={buyNow}
-          style={styles.buyNowButton}
+          style={[
+            styles.buyNowButton,
+            { 
+              flex: 1,
+              height: responsive.getHeight('button'),
+              borderRadius: responsive.getBorderRadius('md'),
+            }
+          ]}
           icon="shopping"
         >
           Acheter maintenant
@@ -286,8 +469,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 10,
     elevation: 2,
   },
   headerTitle: {
@@ -297,18 +478,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   mainImage: {
-    height: 300,
-    width: width,
+    width: '100%',
   },
   imageThumbnails: {
     flexDirection: 'row',
-    paddingHorizontal: 20,
     marginTop: 10,
-    gap: 10,
   },
   thumbnail: {
-    width: 60,
-    height: 60,
     borderRadius: 8,
   },
   selectedThumbnail: {
@@ -316,7 +492,7 @@ const styles = StyleSheet.create({
     borderColor: '#007AFF',
   },
   content: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 0,
   },
   productInfo: {
     marginBottom: 20,
@@ -371,7 +547,6 @@ const styles = StyleSheet.create({
   colorOptions: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 10,
     marginBottom: 20,
   },
   colorChip: {
@@ -380,7 +555,6 @@ const styles = StyleSheet.create({
   sizeOptions: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 10,
     marginBottom: 20,
   },
   sizeChip: {
@@ -417,10 +591,8 @@ const styles = StyleSheet.create({
   },
   actionButtons: {
     flexDirection: 'row',
-    padding: 20,
     borderTopWidth: 1,
     borderTopColor: '#ecf0f1',
-    gap: 10,
   },
   addToCartButton: {
     flex: 1,

@@ -4,6 +4,7 @@ import { Text, TextInput, Button, Card, Chip, Divider, Checkbox, IconButton } fr
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
+import { useResponsive } from '@/hooks/useResponsive';
 
 const { width } = Dimensions.get('window');
 
@@ -48,6 +49,7 @@ export default function CheckoutScreen() {
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
+  const responsive = useResponsive();
 
   // Pré-remplir les données si l'utilisateur est connecté
   useEffect(() => {
@@ -131,14 +133,26 @@ export default function CheckoutScreen() {
   };
 
   const renderHeader = () => (
-    <View style={styles.header}>
+    <View style={[
+      styles.header,
+      { 
+        paddingHorizontal: responsive.getPadding('sm'),
+        paddingVertical: responsive.getPadding('sm'),
+      }
+    ]}>
       <IconButton
         icon="arrow-left"
-        size={24}
+        size={responsive.getAdaptiveSize(24, 28)}
         onPress={handleGoBack}
         iconColor="#2c3e50"
       />
-      <Text variant="titleLarge" style={styles.headerTitle}>
+      <Text 
+        variant="titleLarge" 
+        style={[
+          styles.headerTitle,
+          { fontSize: responsive.getAdaptiveFontSize(20, 24) }
+        ]}
+      >
         Finaliser la commande
       </Text>
       <View style={{ width: 48 }} />
@@ -146,8 +160,17 @@ export default function CheckoutScreen() {
   );
 
   const renderDeliveryForm = () => (
-    <View style={styles.stepContainer}>
-      <Text variant="titleLarge" style={styles.stepTitle}>
+    <View style={[
+      styles.stepContainer,
+      { padding: responsive.getPadding('lg') }
+    ]}>
+      <Text 
+        variant="titleLarge" 
+        style={[
+          styles.stepTitle,
+          { fontSize: responsive.getAdaptiveFontSize(20, 24) }
+        ]}
+      >
         Informations de livraison
       </Text>
       
@@ -157,7 +180,10 @@ export default function CheckoutScreen() {
         </Chip>
       )}
       
-      <View style={styles.formRow}>
+      <View style={[
+        styles.formRow,
+        { gap: responsive.getSpacing('sm') }
+      ]}>
         <TextInput
           label="Prénom *"
           value={deliveryInfo.firstName}
@@ -166,7 +192,10 @@ export default function CheckoutScreen() {
             if (errors.firstName) setErrors({...errors, firstName: ''});
           }}
           mode="outlined"
-          style={styles.halfInput}
+          style={[
+            styles.halfInput,
+            { height: responsive.getHeight('input') }
+          ]}
           error={!!errors.firstName}
           right={errors.firstName ? <TextInput.Icon icon="alert" /> : undefined}
         />
@@ -178,7 +207,10 @@ export default function CheckoutScreen() {
             if (errors.lastName) setErrors({...errors, lastName: ''});
           }}
           mode="outlined"
-          style={styles.halfInput}
+          style={[
+            styles.halfInput,
+            { height: responsive.getHeight('input') }
+          ]}
           error={!!errors.lastName}
           right={errors.lastName ? <TextInput.Icon icon="alert" /> : undefined}
         />
@@ -192,7 +224,10 @@ export default function CheckoutScreen() {
           if (errors.email) setErrors({...errors, email: ''});
         }}
         mode="outlined"
-        style={styles.input}
+        style={[
+          styles.input,
+          { height: responsive.getHeight('input') }
+        ]}
         keyboardType="email-address"
         autoCapitalize="none"
         error={!!errors.email}
@@ -207,7 +242,10 @@ export default function CheckoutScreen() {
           if (errors.phone) setErrors({...errors, phone: ''});
         }}
         mode="outlined"
-        style={styles.input}
+        style={[
+          styles.input,
+          { height: responsive.getHeight('input') }
+        ]}
         keyboardType="phone-pad"
         error={!!errors.phone}
         right={errors.phone ? <TextInput.Icon icon="alert" /> : undefined}
@@ -221,14 +259,20 @@ export default function CheckoutScreen() {
           if (errors.address) setErrors({...errors, address: ''});
         }}
         mode="outlined"
-        style={styles.input}
+        style={[
+          styles.input,
+          { height: responsive.getHeight('input') }
+        ]}
         multiline
         numberOfLines={3}
         error={!!errors.address}
         right={errors.address ? <TextInput.Icon icon="alert" /> : undefined}
       />
 
-      <View style={styles.formRow}>
+      <View style={[
+        styles.formRow,
+        { gap: responsive.getSpacing('sm') }
+      ]}>
         <TextInput
           label="Ville *"
           value={deliveryInfo.city}
@@ -237,7 +281,10 @@ export default function CheckoutScreen() {
             if (errors.city) setErrors({...errors, city: ''});
           }}
           mode="outlined"
-          style={styles.halfInput}
+          style={[
+            styles.halfInput,
+            { height: responsive.getHeight('input') }
+          ]}
           error={!!errors.city}
           right={errors.city ? <TextInput.Icon icon="alert" /> : undefined}
         />
@@ -249,7 +296,10 @@ export default function CheckoutScreen() {
             if (errors.postalCode) setErrors({...errors, postalCode: ''});
           }}
           mode="outlined"
-          style={styles.halfInput}
+          style={[
+            styles.halfInput,
+            { height: responsive.getHeight('input') }
+          ]}
           keyboardType="numeric"
           error={!!errors.postalCode}
           right={errors.postalCode ? <TextInput.Icon icon="alert" /> : undefined}
@@ -259,8 +309,17 @@ export default function CheckoutScreen() {
   );
 
   const renderDeliveryOptions = () => (
-    <View style={styles.stepContainer}>
-      <Text variant="titleLarge" style={styles.stepTitle}>
+    <View style={[
+      styles.stepContainer,
+      { padding: responsive.getPadding('lg') }
+    ]}>
+      <Text 
+        variant="titleLarge" 
+        style={[
+          styles.stepTitle,
+          { fontSize: responsive.getAdaptiveFontSize(20, 24) }
+        ]}
+      >
         Options de livraison
       </Text>
       
@@ -269,6 +328,10 @@ export default function CheckoutScreen() {
           key={option.id}
           style={[
             styles.deliveryCard,
+            { 
+              marginBottom: responsive.getSpacing('sm'),
+              borderRadius: responsive.getBorderRadius('lg'),
+            },
             selectedDelivery === option.id && styles.selectedDeliveryCard
           ]}
           onPress={() => setSelectedDelivery(option.id)}
@@ -276,14 +339,32 @@ export default function CheckoutScreen() {
           <Card.Content>
             <View style={styles.deliveryOption}>
               <View style={styles.deliveryInfo}>
-                <Text variant="titleMedium" style={styles.deliveryName}>
+                <Text 
+                  variant="titleMedium" 
+                  style={[
+                    styles.deliveryName,
+                    { fontSize: responsive.getAdaptiveFontSize(16, 18) }
+                  ]}
+                >
                   {option.name}
                 </Text>
-                <Text variant="bodyMedium" style={styles.deliveryTime}>
+                <Text 
+                  variant="bodyMedium" 
+                  style={[
+                    styles.deliveryTime,
+                    { fontSize: responsive.getAdaptiveFontSize(14, 16) }
+                  ]}
+                >
                   {option.time}
                 </Text>
               </View>
-              <Text variant="titleMedium" style={styles.deliveryPrice}>
+              <Text 
+                variant="titleMedium" 
+                style={[
+                  styles.deliveryPrice,
+                  { fontSize: responsive.getAdaptiveFontSize(16, 18) }
+                ]}
+              >
                 {option.price.toLocaleString()} CFA
               </Text>
             </View>
@@ -294,28 +375,64 @@ export default function CheckoutScreen() {
   );
 
   const renderOrderSummary = () => (
-    <View style={styles.stepContainer}>
-      <Text variant="titleLarge" style={styles.stepTitle}>
+    <View style={[
+      styles.stepContainer,
+      { padding: responsive.getPadding('lg') }
+    ]}>
+      <Text 
+        variant="titleLarge" 
+        style={[
+          styles.stepTitle,
+          { fontSize: responsive.getAdaptiveFontSize(20, 24) }
+        ]}
+      >
         Récapitulatif de la commande
       </Text>
       
-      <Card style={styles.summaryCard}>
+      <Card style={[
+        styles.summaryCard,
+        { borderRadius: responsive.getBorderRadius('lg') }
+      ]}>
         <Card.Content>
-          <Text variant="titleMedium" style={styles.summaryTitle}>
+          <Text 
+            variant="titleMedium" 
+            style={[
+              styles.summaryTitle,
+              { fontSize: responsive.getAdaptiveFontSize(18, 20) }
+            ]}
+          >
             Articles commandés
           </Text>
           
           {cartItems.map((item) => (
             <View key={item.id} style={styles.cartItem}>
               <View style={styles.itemInfo}>
-                <Text variant="bodyMedium" style={styles.itemName}>
+                <Text 
+                  variant="bodyMedium" 
+                  style={[
+                    styles.itemName,
+                    { fontSize: responsive.getAdaptiveFontSize(14, 16) }
+                  ]}
+                >
                   {item.name}
                 </Text>
-                <Text variant="bodySmall" style={styles.itemQuantity}>
+                <Text 
+                  variant="bodySmall" 
+                  style={[
+                    styles.itemQuantity,
+                    { fontSize: responsive.getAdaptiveFontSize(12, 14) }
+                  ]}
+                >
                   Quantité: {item.quantity}
                 </Text>
               </View>
-              <Text variant="bodyMedium" style={styles.itemPrice}>
+              <Text 
+                variant="bodyMedium" 
+                style={[
+                  styles.itemPrice,
+                  { fontSize: responsive.getAdaptiveFontSize(14, 16) }
+                ]}
+              >
                 {(item.price * item.quantity).toLocaleString()} CFA
               </Text>
             </View>
@@ -324,22 +441,54 @@ export default function CheckoutScreen() {
           <Divider style={styles.divider} />
           
           <View style={styles.summaryRow}>
-            <Text variant="bodyMedium">Sous-total</Text>
-            <Text variant="bodyMedium">{calculateSubtotal().toLocaleString()} CFA</Text>
+            <Text 
+              variant="bodyMedium"
+              style={{ fontSize: responsive.getAdaptiveFontSize(14, 16) }}
+            >
+              Sous-total
+            </Text>
+            <Text 
+              variant="bodyMedium"
+              style={{ fontSize: responsive.getAdaptiveFontSize(14, 16) }}
+            >
+              {calculateSubtotal().toLocaleString()} CFA
+            </Text>
           </View>
           
           <View style={styles.summaryRow}>
-            <Text variant="bodyMedium">Livraison</Text>
-            <Text variant="bodyMedium">{getDeliveryOption()?.price.toLocaleString()} CFA</Text>
+            <Text 
+              variant="bodyMedium"
+              style={{ fontSize: responsive.getAdaptiveFontSize(14, 16) }}
+            >
+              Livraison
+            </Text>
+            <Text 
+              variant="bodyMedium"
+              style={{ fontSize: responsive.getAdaptiveFontSize(14, 16) }}
+            >
+              {getDeliveryOption()?.price.toLocaleString()} CFA
+            </Text>
           </View>
           
           <Divider style={styles.divider} />
           
           <View style={styles.summaryRow}>
-            <Text variant="titleMedium" style={styles.totalLabel}>
+            <Text 
+              variant="titleMedium" 
+              style={[
+                styles.totalLabel,
+                { fontSize: responsive.getAdaptiveFontSize(18, 20) }
+              ]}
+            >
               Total
             </Text>
-            <Text variant="titleMedium" style={styles.totalAmount}>
+            <Text 
+              variant="titleMedium" 
+              style={[
+                styles.totalAmount,
+                { fontSize: responsive.getAdaptiveFontSize(18, 20) }
+              ]}
+            >
               {calculateTotal().toLocaleString()} CFA
             </Text>
           </View>
@@ -351,7 +500,13 @@ export default function CheckoutScreen() {
           status={acceptTerms ? 'checked' : 'unchecked'}
           onPress={() => setAcceptTerms(!acceptTerms)}
         />
-        <Text variant="bodySmall" style={styles.termsText}>
+        <Text 
+          variant="bodySmall" 
+          style={[
+            styles.termsText,
+            { fontSize: responsive.getAdaptiveFontSize(12, 14) }
+          ]}
+        >
           J'accepte les conditions générales de vente et la politique de confidentialité
         </Text>
       </View>
@@ -359,14 +514,30 @@ export default function CheckoutScreen() {
   );
 
   const renderStepIndicator = () => (
-    <View style={styles.stepIndicator}>
+    <View style={[
+      styles.stepIndicator,
+      { 
+        padding: responsive.getPadding('lg'),
+      }
+    ]}>
       {[1, 2, 3].map((stepNumber) => (
         <View key={stepNumber} style={styles.stepDot}>
           <View style={[
             styles.dot,
+            { 
+              width: responsive.getAdaptiveSize(20, 24),
+              height: responsive.getAdaptiveSize(20, 24),
+              borderRadius: responsive.getAdaptiveSize(10, 12),
+            },
             step >= stepNumber && styles.activeDot
           ]} />
-          <Text variant="bodySmall" style={styles.stepLabel}>
+          <Text 
+            variant="bodySmall" 
+            style={[
+              styles.stepLabel,
+              { fontSize: responsive.getAdaptiveFontSize(12, 14) }
+            ]}
+          >
             {stepNumber === 1 ? 'Livraison' : stepNumber === 2 ? 'Options' : 'Récapitulatif'}
           </Text>
         </View>
@@ -386,12 +557,25 @@ export default function CheckoutScreen() {
       </ScrollView>
 
       {/* Navigation des étapes */}
-      <View style={styles.bottomActions}>
+      <View style={[
+        styles.bottomActions,
+        { 
+          padding: responsive.getPadding('lg'),
+          gap: responsive.getSpacing('sm'),
+        }
+      ]}>
         {step > 1 && (
           <Button
             mode="outlined"
             onPress={handlePreviousStep}
-            style={styles.navButton}
+            style={[
+              styles.navButton,
+              { 
+                flex: 1,
+                height: responsive.getHeight('button'),
+                borderRadius: responsive.getBorderRadius('md'),
+              }
+            ]}
             icon="arrow-left"
           >
             Précédent
@@ -402,7 +586,14 @@ export default function CheckoutScreen() {
           <Button
             mode="contained"
             onPress={handleNextStep}
-            style={styles.navButton}
+            style={[
+              styles.navButton,
+              { 
+                flex: 1,
+                height: responsive.getHeight('button'),
+                borderRadius: responsive.getBorderRadius('md'),
+              }
+            ]}
             icon="arrow-right"
           >
             Suivant
@@ -413,7 +604,14 @@ export default function CheckoutScreen() {
             onPress={handleSubmitOrder}
             loading={isLoading}
             disabled={isLoading || !acceptTerms}
-            style={styles.submitButton}
+            style={[
+              styles.submitButton,
+              { 
+                flex: 1,
+                height: responsive.getHeight('button'),
+                borderRadius: responsive.getBorderRadius('md'),
+              }
+            ]}
             icon="check"
           >
             Confirmer la commande

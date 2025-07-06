@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, ScrollView, StyleSheet, Dimensions } from 'react-native';
 import { Text, Card, Button, Chip, DataTable, Searchbar, FAB, IconButton, Avatar } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useResponsive } from '@/hooks/useResponsive';
 
 const { width } = Dimensions.get('window');
 
@@ -74,6 +75,7 @@ const statusOptions = [
 export default function AdminUsersScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('all');
+  const responsive = useResponsive();
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -96,23 +98,52 @@ export default function AdminUsersScreen() {
     <DataTable.Row key={user.id}>
       <DataTable.Cell>
         <View style={styles.userCell}>
-          <Avatar.Text size={32} label={user.name.split(' ').map((n: string) => n[0]).join('')} />
+          <Avatar.Text 
+            size={responsive.getAdaptiveSize(32, 40)} 
+            label={user.name.split(' ').map((n: string) => n[0]).join('')} 
+          />
           <View style={styles.userInfo}>
-            <Text variant="bodyMedium" style={styles.userName}>
+            <Text 
+              variant="bodyMedium" 
+              style={[
+                styles.userName,
+                { fontSize: responsive.getAdaptiveFontSize(14, 16) }
+              ]}
+            >
               {user.name}
             </Text>
-            <Text variant="bodySmall" style={styles.userEmail}>
+            <Text 
+              variant="bodySmall" 
+              style={[
+                styles.userEmail,
+                { fontSize: responsive.getAdaptiveFontSize(12, 14) }
+              ]}
+            >
               {user.email}
             </Text>
           </View>
         </View>
       </DataTable.Cell>
-      <DataTable.Cell numeric>{user.orders}</DataTable.Cell>
-      <DataTable.Cell numeric>{user.totalSpent.toLocaleString()} CFA</DataTable.Cell>
+      <DataTable.Cell numeric>
+        <Text style={{ fontSize: responsive.getAdaptiveFontSize(14, 16) }}>
+          {user.orders}
+        </Text>
+      </DataTable.Cell>
+      <DataTable.Cell numeric>
+        <Text style={{ fontSize: responsive.getAdaptiveFontSize(14, 16) }}>
+          {user.totalSpent.toLocaleString()} CFA
+        </Text>
+      </DataTable.Cell>
       <DataTable.Cell>
         <Chip
           mode="outlined"
-          style={[styles.statusChip, { backgroundColor: getStatusColor(user.status) }]}
+          style={[
+            styles.statusChip,
+            { 
+              backgroundColor: getStatusColor(user.status),
+              height: responsive.getAdaptiveSize(24, 28),
+            }
+          ]}
         >
           {user.status}
         </Chip>
@@ -121,12 +152,12 @@ export default function AdminUsersScreen() {
         <View style={styles.actionButtons}>
           <IconButton
             icon="eye"
-            size={20}
+            size={responsive.getAdaptiveSize(20, 24)}
             onPress={() => console.log(`Voir le profil de ${user.name}`)}
           />
           <IconButton
             icon={user.status === 'Actif' ? 'pause' : 'play'}
-            size={20}
+            size={responsive.getAdaptiveSize(20, 24)}
             iconColor={user.status === 'Actif' ? '#FF9800' : '#4CAF50'}
             onPress={() => toggleUserStatus(user.id, user.status)}
           />
@@ -139,11 +170,26 @@ export default function AdminUsersScreen() {
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Header */}
-        <View style={styles.header}>
-          <Text variant="headlineMedium" style={styles.title}>
+        <View style={[
+          styles.header,
+          { padding: responsive.getPadding('lg') }
+        ]}>
+          <Text 
+            variant="headlineMedium" 
+            style={[
+              styles.title,
+              { fontSize: responsive.getAdaptiveFontSize(24, 28) }
+            ]}
+          >
             Gestion des Utilisateurs
           </Text>
-          <Text variant="bodyMedium" style={styles.subtitle}>
+          <Text 
+            variant="bodyMedium" 
+            style={[
+              styles.subtitle,
+              { fontSize: responsive.getAdaptiveFontSize(14, 16) }
+            ]}
+          >
             {filteredUsers.length} utilisateur(s)
           </Text>
         </View>
@@ -153,18 +199,31 @@ export default function AdminUsersScreen() {
           placeholder="Rechercher un utilisateur..."
           onChangeText={setSearchQuery}
           value={searchQuery}
-          style={styles.searchBar}
+          style={[
+            styles.searchBar,
+            { 
+              marginHorizontal: responsive.getMargin('lg'),
+              marginBottom: responsive.getSpacing('lg'),
+              borderRadius: responsive.getBorderRadius('lg'),
+            }
+          ]}
         />
 
         {/* Filtres par statut */}
-        <View style={styles.filtersContainer}>
+        <View style={[
+          styles.filtersContainer,
+          { paddingHorizontal: responsive.getPadding('lg') }
+        ]}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {statusOptions.map((status) => (
               <Chip
                 key={status.value}
                 mode={selectedStatus === status.value ? 'flat' : 'outlined'}
                 onPress={() => setSelectedStatus(status.value)}
-                style={styles.filterChip}
+                style={[
+                  styles.filterChip,
+                  { marginRight: responsive.getSpacing('sm') }
+                ]}
               >
                 {status.label}
               </Chip>
@@ -173,15 +232,42 @@ export default function AdminUsersScreen() {
         </View>
 
         {/* Liste des utilisateurs */}
-        <Card style={styles.usersCard}>
+        <Card style={[
+          styles.usersCard,
+          { 
+            marginHorizontal: responsive.getMargin('lg'),
+            marginBottom: responsive.getSpacing('lg'),
+            borderRadius: responsive.getBorderRadius('lg'),
+          }
+        ]}>
           <Card.Content>
             <DataTable>
               <DataTable.Header>
-                <DataTable.Title>Utilisateur</DataTable.Title>
-                <DataTable.Title numeric>Commandes</DataTable.Title>
-                <DataTable.Title numeric>Total dépensé</DataTable.Title>
-                <DataTable.Title>Statut</DataTable.Title>
-                <DataTable.Title>Actions</DataTable.Title>
+                <DataTable.Title>
+                  <Text style={{ fontSize: responsive.getAdaptiveFontSize(14, 16) }}>
+                    Utilisateur
+                  </Text>
+                </DataTable.Title>
+                <DataTable.Title numeric>
+                  <Text style={{ fontSize: responsive.getAdaptiveFontSize(14, 16) }}>
+                    Commandes
+                  </Text>
+                </DataTable.Title>
+                <DataTable.Title numeric>
+                  <Text style={{ fontSize: responsive.getAdaptiveFontSize(14, 16) }}>
+                    Total dépensé
+                  </Text>
+                </DataTable.Title>
+                <DataTable.Title>
+                  <Text style={{ fontSize: responsive.getAdaptiveFontSize(14, 16) }}>
+                    Statut
+                  </Text>
+                </DataTable.Title>
+                <DataTable.Title>
+                  <Text style={{ fontSize: responsive.getAdaptiveFontSize(14, 16) }}>
+                    Actions
+                  </Text>
+                </DataTable.Title>
               </DataTable.Header>
 
               {filteredUsers.map(renderUserRow)}
@@ -190,33 +276,84 @@ export default function AdminUsersScreen() {
         </Card>
 
         {/* Statistiques rapides */}
-        <View style={styles.statsContainer}>
-          <Card style={styles.statCard}>
+        <View style={[
+          styles.statsContainer,
+          { 
+            paddingHorizontal: responsive.getPadding('lg'),
+            gap: responsive.getSpacing('sm'),
+          }
+        ]}>
+          <Card style={[
+            styles.statCard,
+            { borderRadius: responsive.getBorderRadius('lg') }
+          ]}>
             <Card.Content>
-              <Text variant="titleLarge" style={styles.statValue}>
+              <Text 
+                variant="titleLarge" 
+                style={[
+                  styles.statValue,
+                  { fontSize: responsive.getAdaptiveFontSize(24, 28) }
+                ]}
+              >
                 {users.length}
               </Text>
-              <Text variant="bodyMedium" style={styles.statLabel}>
+              <Text 
+                variant="bodyMedium" 
+                style={[
+                  styles.statLabel,
+                  { fontSize: responsive.getAdaptiveFontSize(14, 16) }
+                ]}
+              >
                 Total utilisateurs
               </Text>
             </Card.Content>
           </Card>
-          <Card style={styles.statCard}>
+          <Card style={[
+            styles.statCard,
+            { borderRadius: responsive.getBorderRadius('lg') }
+          ]}>
             <Card.Content>
-              <Text variant="titleLarge" style={styles.statValue}>
+              <Text 
+                variant="titleLarge" 
+                style={[
+                  styles.statValue,
+                  { fontSize: responsive.getAdaptiveFontSize(24, 28) }
+                ]}
+              >
                 {users.filter(u => u.status === 'Actif').length}
               </Text>
-              <Text variant="bodyMedium" style={styles.statLabel}>
+              <Text 
+                variant="bodyMedium" 
+                style={[
+                  styles.statLabel,
+                  { fontSize: responsive.getAdaptiveFontSize(14, 16) }
+                ]}
+              >
                 Utilisateurs actifs
               </Text>
             </Card.Content>
           </Card>
-          <Card style={styles.statCard}>
+          <Card style={[
+            styles.statCard,
+            { borderRadius: responsive.getBorderRadius('lg') }
+          ]}>
             <Card.Content>
-              <Text variant="titleLarge" style={styles.statValue}>
+              <Text 
+                variant="titleLarge" 
+                style={[
+                  styles.statValue,
+                  { fontSize: responsive.getAdaptiveFontSize(24, 28) }
+                ]}
+              >
                 {users.reduce((total, user) => total + user.totalSpent, 0).toLocaleString()} CFA
               </Text>
-              <Text variant="bodyMedium" style={styles.statLabel}>
+              <Text 
+                variant="bodyMedium" 
+                style={[
+                  styles.statLabel,
+                  { fontSize: responsive.getAdaptiveFontSize(14, 16) }
+                ]}
+              >
                 Chiffre d'affaires
               </Text>
             </Card.Content>
@@ -224,16 +361,39 @@ export default function AdminUsersScreen() {
         </View>
 
         {/* Actions en masse */}
-        <Card style={styles.bulkActionsCard}>
+        <Card style={[
+          styles.bulkActionsCard,
+          { 
+            marginHorizontal: responsive.getMargin('lg'),
+            marginBottom: responsive.getSpacing('lg'),
+            borderRadius: responsive.getBorderRadius('lg'),
+          }
+        ]}>
           <Card.Content>
-            <Text variant="titleMedium" style={styles.bulkActionsTitle}>
+            <Text 
+              variant="titleMedium" 
+              style={[
+                styles.bulkActionsTitle,
+                { fontSize: responsive.getAdaptiveFontSize(18, 20) }
+              ]}
+            >
               Actions en masse
             </Text>
-            <View style={styles.bulkActionsButtons}>
+            <View style={[
+              styles.bulkActionsButtons,
+              { gap: responsive.getSpacing('sm') }
+            ]}>
               <Button
                 mode="outlined"
                 icon="email"
-                style={styles.bulkActionButton}
+                style={[
+                  styles.bulkActionButton,
+                  { 
+                    flex: 1,
+                    height: responsive.getHeight('button'),
+                    borderRadius: responsive.getBorderRadius('md'),
+                  }
+                ]}
                 onPress={() => console.log('Envoyer email en masse')}
               >
                 Email en masse
@@ -241,7 +401,14 @@ export default function AdminUsersScreen() {
               <Button
                 mode="outlined"
                 icon="download"
-                style={styles.bulkActionButton}
+                style={[
+                  styles.bulkActionButton,
+                  { 
+                    flex: 1,
+                    height: responsive.getHeight('button'),
+                    borderRadius: responsive.getBorderRadius('md'),
+                  }
+                ]}
                 onPress={() => console.log('Exporter les données')}
               >
                 Exporter
@@ -254,7 +421,13 @@ export default function AdminUsersScreen() {
       {/* FAB pour ajouter un utilisateur */}
       <FAB
         icon="plus"
-        style={styles.fab}
+        style={[
+          styles.fab,
+          { 
+            margin: responsive.getMargin('md'),
+            borderRadius: responsive.getBorderRadius('xl'),
+          }
+        ]}
         onPress={() => console.log('Ajouter un utilisateur')}
       />
     </SafeAreaView>

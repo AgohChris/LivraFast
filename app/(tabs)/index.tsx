@@ -8,6 +8,7 @@ import { useCart } from '@/contexts/CartContext';
 import { useThemeMode } from '@/contexts/ThemeContext';
 import { LinearGradient } from 'expo-linear-gradient';
 import { shadows, categoryColors } from '@/theme/theme';
+import { useResponsive } from '@/hooks/useResponsive';
 
 const { width, height } = Dimensions.get('window');
 
@@ -91,6 +92,7 @@ export default function HomeScreen() {
   const colorScheme = useColorScheme();
   const { getItemCount } = useCart();
   const { toggleTheme, themeMode } = useThemeMode();
+  const responsive = useResponsive();
   
   // Animations
   const fadeAnim = useState(new Animated.Value(0))[0];
@@ -137,6 +139,7 @@ export default function HomeScreen() {
         styles.header,
         { 
           opacity: fadeAnim,
+          padding: responsive.getPadding(responsive.isTablet ? 'xl' : 'lg'),
         }
       ]}
     >
@@ -150,12 +153,21 @@ export default function HomeScreen() {
           <View style={styles.headerText}>
             <Text 
               variant="displaySmall" 
-              style={styles.title}
+              style={[
+                styles.title,
+                { fontSize: responsive.getAdaptiveFontSize(28, 32) }
+              ]}
               onPress={handleLogoPress}
             >
               LivraFast Mode
             </Text>
-            <Text variant="bodyLarge" style={styles.subtitle}>
+            <Text 
+              variant="bodyLarge" 
+              style={[
+                styles.subtitle,
+                { fontSize: responsive.getAdaptiveFontSize(16, 18) }
+              ]}
+            >
               Vêtements, chaussures et habits livrés rapidement
             </Text>
           </View>
@@ -163,7 +175,7 @@ export default function HomeScreen() {
             <View style={styles.cartBadge}>
               <IconButton
                 icon="cart"
-                size={24}
+                size={responsive.getAdaptiveSize(24, 28)}
                 iconColor={theme.colors.onPrimary}
                 onPress={() => router.push('/(tabs)/cart' as any)}
               />
@@ -175,7 +187,7 @@ export default function HomeScreen() {
             </View>
             <IconButton
               icon={themeMode === 'dark' ? 'weather-sunny' : 'weather-night'}
-              size={24}
+              size={responsive.getAdaptiveSize(24, 28)}
               iconColor={theme.colors.onPrimary}
               onPress={toggleTheme}
             />
@@ -191,6 +203,7 @@ export default function HomeScreen() {
         styles.searchContainer,
         { 
           opacity: fadeAnim,
+          paddingHorizontal: responsive.getPadding(responsive.isTablet ? 'xl' : 'lg'),
         }
       ]}
     >
@@ -198,7 +211,13 @@ export default function HomeScreen() {
         placeholder="Rechercher un vêtement, chaussure ou habit..."
         onChangeText={setSearchQuery}
         value={searchQuery}
-        style={styles.searchBar}
+        style={[
+          styles.searchBar,
+          { 
+            borderRadius: responsive.getBorderRadius('lg'),
+            height: responsive.getHeight('input'),
+          }
+        ]}
         iconColor={theme.colors.primary}
       />
     </Animated.View>
@@ -206,14 +225,27 @@ export default function HomeScreen() {
 
   const renderCategories = () => (
     <View style={styles.section}>
-      <Text variant="headlineSmall" style={[styles.sectionTitle, { color: theme.colors.onSurface }]}>
+      <Text 
+        variant="headlineSmall" 
+        style={[
+          styles.sectionTitle, 
+          { 
+            color: theme.colors.onSurface,
+            fontSize: responsive.getAdaptiveFontSize(20, 24),
+            marginHorizontal: responsive.getMargin(responsive.isTablet ? 'xl' : 'lg'),
+          }
+        ]}
+      >
         Catégories populaires
       </Text>
       <ScrollView 
         horizontal 
         showsHorizontalScrollIndicator={false} 
         style={styles.categoriesContainer}
-        contentContainerStyle={styles.categoriesContent}
+        contentContainerStyle={[
+          styles.categoriesContent,
+          { paddingHorizontal: responsive.getPadding(responsive.isTablet ? 'xl' : 'lg') }
+        ]}
       >
         {categories.map((category, index) => (
           <Animated.View
@@ -224,17 +256,28 @@ export default function HomeScreen() {
           >
             <LinearGradient
               colors={category.gradient as [string, string]}
-              style={styles.categoryCard}
+              style={[
+                styles.categoryCard,
+                {
+                  width: responsive.getAdaptiveSize(120, 160),
+                  height: responsive.getAdaptiveSize(120, 160),
+                  borderRadius: responsive.getBorderRadius('xl'),
+                  marginRight: responsive.getSpacing('md'),
+                }
+              ]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
             >
               <IconButton
                 icon={category.icon}
-                size={32}
+                size={responsive.getAdaptiveSize(32, 40)}
                 iconColor="white"
                 style={styles.categoryIcon}
               />
-              <Text style={styles.categoryName}>
+              <Text style={[
+                styles.categoryName,
+                { fontSize: responsive.getAdaptiveFontSize(12, 14) }
+              ]}>
                 {category.name}
               </Text>
             </LinearGradient>
@@ -244,59 +287,136 @@ export default function HomeScreen() {
     </View>
   );
 
-  const renderFeaturedProducts = () => (
-    <View style={styles.section}>
-      <Text variant="headlineSmall" style={[styles.sectionTitle, { color: theme.colors.onSurface }]}>
-        Articles en vedette
-      </Text>
-      <View style={styles.productsGrid}>
-        {featuredProducts.map((product, index) => (
-          <Animated.View
-            key={product.id}
-            style={[
-              styles.productCard,
-              {
-                opacity: fadeAnim,
-              }
-            ]}
-          >
-            <LinearGradient
-              colors={['#FFFFFF', '#F8FAFC']}
-              style={styles.productGradient}
+  const renderFeaturedProducts = () => {
+    const productCardWidth = responsive.isTablet 
+      ? (responsive.screenWidth - responsive.getSpacing('xl') * 2 - responsive.getSpacing('md')) / 2
+      : (responsive.screenWidth - responsive.getSpacing('lg') * 2 - responsive.getSpacing('md')) / 2;
+
+    return (
+      <View style={styles.section}>
+        <Text 
+          variant="headlineSmall" 
+          style={[
+            styles.sectionTitle, 
+            { 
+              color: theme.colors.onSurface,
+              fontSize: responsive.getAdaptiveFontSize(20, 24),
+              marginHorizontal: responsive.getMargin(responsive.isTablet ? 'xl' : 'lg'),
+            }
+          ]}
+        >
+          Articles en vedette
+        </Text>
+        <View style={[
+          styles.productsGrid,
+          { 
+            paddingHorizontal: responsive.getPadding(responsive.isTablet ? 'xl' : 'lg'),
+            gap: responsive.getSpacing('md'),
+          }
+        ]}>
+          {featuredProducts.map((product, index) => (
+            <Animated.View
+              key={product.id}
+              style={[
+                styles.productCard,
+                {
+                  width: productCardWidth,
+                  opacity: fadeAnim,
+                }
+              ]}
             >
-              <View style={styles.productImageContainer}>
-                <View style={styles.discountBadge}>
-                  <Text style={styles.discountText}>-{product.discount}%</Text>
+              <LinearGradient
+                colors={['#FFFFFF', '#F8FAFC']}
+                style={[
+                  styles.productGradient,
+                  { borderRadius: responsive.getBorderRadius('xl') }
+                ]}
+              >
+                <View style={[
+                  styles.productImageContainer,
+                  { height: responsive.getAdaptiveSize(120, 160) }
+                ]}>
+                  <View style={styles.discountBadge}>
+                    <Text style={[
+                      styles.discountText,
+                      { fontSize: responsive.getAdaptiveFontSize(12, 14) }
+                    ]}>-{product.discount}%</Text>
+                  </View>
+                  <View style={styles.productImage} />
                 </View>
-                <View style={styles.productImage} />
-              </View>
-              <View style={styles.productContent}>
-                <Text variant="titleSmall" style={[styles.productName, { color: theme.colors.onSurface }]} numberOfLines={2}>
-                  {product.name}
-                </Text>
-                <View style={styles.productRating}>
-                  <Text variant="bodySmall" style={{ color: '#F59E0B' }}>
-                    {product.rating} ({product.reviews})
+                <View style={[
+                  styles.productContent,
+                  { padding: responsive.getPadding('md') }
+                ]}>
+                  <Text 
+                    variant="titleSmall" 
+                    style={[
+                      styles.productName, 
+                      { 
+                        color: theme.colors.onSurface,
+                        fontSize: responsive.getAdaptiveFontSize(14, 16),
+                      }
+                    ]} 
+                    numberOfLines={2}
+                  >
+                    {product.name}
                   </Text>
+                  <View style={styles.productRating}>
+                    <Text 
+                      variant="bodySmall" 
+                      style={{ 
+                        color: '#F59E0B',
+                        fontSize: responsive.getAdaptiveFontSize(12, 14)
+                      }}
+                    >
+                      {product.rating} ({product.reviews})
+                    </Text>
+                  </View>
+                  <View style={styles.productPrice}>
+                    <Text 
+                      variant="titleMedium" 
+                      style={[
+                        styles.currentPrice, 
+                        { 
+                          color: theme.colors.primary,
+                          fontSize: responsive.getAdaptiveFontSize(16, 18)
+                        }
+                      ]}> 
+                      {formatCFA(product.price)}
+                    </Text>
+                    <Text 
+                      variant="bodySmall" 
+                      style={[
+                        styles.originalPrice, 
+                        { 
+                          color: theme.colors.onSurfaceVariant,
+                          fontSize: responsive.getAdaptiveFontSize(14, 16)
+                        }
+                      ]}> 
+                      {formatCFA(product.originalPrice)}
+                    </Text>
+                  </View>
+                  <Chip 
+                    mode="outlined" 
+                    style={[
+                      styles.categoryChip,
+                      { borderRadius: responsive.getBorderRadius('md') }
+                    ]} 
+                    textStyle={[
+                      styles.categoryChipText,
+                      { fontSize: responsive.getAdaptiveFontSize(11, 13) }
+                    ]}
+                  >
+                    {product.category}
+                  </Chip>
                 </View>
-                <View style={styles.productPrice}>
-                  <Text variant="titleMedium" style={[styles.currentPrice, { color: theme.colors.primary }]}> 
-                    {formatCFA(product.price)}
-                  </Text>
-                  <Text variant="bodySmall" style={[styles.originalPrice, { color: theme.colors.onSurfaceVariant }]}> 
-                    {formatCFA(product.originalPrice)}
-                  </Text>
-                </View>
-                <Chip mode="outlined" style={styles.categoryChip} textStyle={styles.categoryChipText}>
-                  {product.category}
-                </Chip>
-              </View>
-            </LinearGradient>
-          </Animated.View>
-        ))}
+              </LinearGradient>
+            </Animated.View>
+          ))}
+        </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   const renderPromoSection = () => (
     <Animated.View 
@@ -304,26 +424,51 @@ export default function HomeScreen() {
         styles.promoSection,
         { 
           opacity: fadeAnim,
+          paddingHorizontal: responsive.getPadding(responsive.isTablet ? 'xl' : 'lg'),
         }
       ]}
     >
       <LinearGradient
         colors={['#F59E0B', '#F97316']}
-        style={styles.promoCard}
+        style={[
+          styles.promoCard,
+          { 
+            borderRadius: responsive.getBorderRadius('xxl'),
+            padding: responsive.getPadding('xl'),
+          }
+        ]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
       >
         <View style={styles.promoContent}>
-          <Text variant="headlineSmall" style={styles.promoTitle}>
+          <Text 
+            variant="headlineSmall" 
+            style={[
+              styles.promoTitle,
+              { fontSize: responsive.getAdaptiveFontSize(20, 24) }
+            ]}
+          >
             Livraison gratuite
           </Text>
-          <Text variant="bodyLarge" style={styles.promoText}>
+          <Text 
+            variant="bodyLarge" 
+            style={[
+              styles.promoText,
+              { fontSize: responsive.getAdaptiveFontSize(16, 18) }
+            ]}
+          >
             Pour toute commande supérieure à 50 000 CFA
           </Text>
           <Button
             mode="contained"
             onPress={() => console.log('Voir les conditions')}
-            style={styles.promoButton}
+            style={[
+              styles.promoButton,
+              { 
+                borderRadius: responsive.getBorderRadius('md'),
+                height: responsive.getHeight('button'),
+              }
+            ]}
             textColor={theme.colors.onSecondary}
           >
             Voir les conditions
@@ -392,12 +537,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#EF4444',
   },
   searchContainer: {
-    paddingHorizontal: 20,
     marginBottom: 24,
   },
   searchBar: {
     elevation: 8,
-    borderRadius: 16,
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
@@ -409,21 +552,16 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontWeight: '700',
-    marginHorizontal: 20,
     marginBottom: 20,
     letterSpacing: -0.3,
   },
   categoriesContainer: {
-    paddingLeft: 20,
+    paddingLeft: 0,
   },
   categoriesContent: {
-    paddingRight: 20,
+    paddingRight: 0,
   },
   categoryCard: {
-    width: 120,
-    height: 120,
-    borderRadius: 20,
-    marginRight: 16,
     justifyContent: 'center',
     alignItems: 'center',
     ...shadows.medium,
@@ -435,18 +573,15 @@ const styles = StyleSheet.create({
   categoryName: {
     color: 'white',
     fontWeight: '600',
-    fontSize: 12,
     textAlign: 'center',
     lineHeight: 16,
   },
   productsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    paddingHorizontal: 20,
     justifyContent: 'space-between',
   },
   productCard: {
-    width: (width - 48) / 2,
     borderRadius: 20,
     overflow: 'hidden',
     marginBottom: 16,
@@ -458,7 +593,6 @@ const styles = StyleSheet.create({
   },
   productImageContainer: {
     position: 'relative',
-    height: 120,
   },
   productImage: {
     width: '100%',
@@ -476,7 +610,6 @@ const styles = StyleSheet.create({
   },
   discountText: {
     color: 'white',
-    fontSize: 12,
     fontWeight: '600',
   },
   productContent: {
@@ -486,7 +619,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginBottom: 8,
     lineHeight: 18,
-    fontSize: 14,
   },
   productRating: {
     marginBottom: 8,
@@ -502,7 +634,6 @@ const styles = StyleSheet.create({
   },
   originalPrice: {
     textDecorationLine: 'line-through',
-    fontSize: 14,
   },
   categoryChip: {
     alignSelf: 'flex-start',
@@ -510,16 +641,13 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   categoryChipText: {
-    fontSize: 11,
     fontWeight: '500',
   },
   promoSection: {
-    paddingHorizontal: 20,
     marginBottom: 32,
   },
   promoCard: {
     borderRadius: 24,
-    padding: 24,
     ...shadows.large,
   },
   promoContent: {
